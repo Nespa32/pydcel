@@ -37,6 +37,10 @@ class dcelVis(Tk):
         self.bind('e', self.iteratehedge)
         self.bind('v', self.iteratevertex)
         self.bind('f', self.iterateface)
+
+        self.bind('t', self.goto_twin)
+        self.bind('n', self.goto_next_hedge)
+
         self.canvas = Canvas(self, bg="white", width=self.sizex, height=self.sizey)
         self.canvas.pack()
 
@@ -118,6 +122,7 @@ class dcelVis(Tk):
         self.hedge_it = self.type_iterator('hedge')
         self.face_it = self.type_iterator('face')
         self.vertex_it = self.type_iterator('vertex')
+        self.current_he = None
 
     def getClosestVertex(self, screenx, screeny):
         vertices = [np.array([v.x,v.y]) for v in self.D.vertexList]
@@ -159,10 +164,20 @@ class dcelVis(Tk):
             self.vertex_it = self.type_iterator('vertex')
             self.vertex_it.next()
 
+    def goto_twin(self, event):
+        if self.current_he is not None:
+            self.current_he = self.current_he.twin
+            self.explain_hedge(self.current_he)
+
+    def goto_next_hedge(self, event):
+        if self.current_he is not None:
+            self.current_he = self.current_he.next
+            self.explain_hedge(self.current_he)
 
     def type_iterator(self, q='hedge'):
         if q == 'hedge':
             for e in self.D.hedgeList:
+                self.current_he = e
                 yield self.explain_hedge(e)
         elif q == 'face':
             for e in self.D.faceList:
