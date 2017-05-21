@@ -8,9 +8,10 @@ except ImportError:
     WITH_FLANN = False
 
 import math
+import sys
 from vector import vec2
-
 from interface_draw import draw
+
 HELP = """
 q - quit
 h - print help message
@@ -20,6 +21,10 @@ e - iterate through halfedges
 v - iterate through vertices
 f - iterate through faces
 """
+
+def printMessage(s):
+    print(s)
+    sys.stdout.flush()
 
 class dcelVis(Tk):
     def __init__(self, dcel):
@@ -78,10 +83,10 @@ class dcelVis(Tk):
         return (x,y)
 
     def print_help(self, event):
-        print HELP
+        printMessage(HELP)
 
     def print_dcel(self, event):
-        print self.D
+        printMessage(self.D)
 
     def bind_dcel(self, dcel):
         minx = maxx = dcel.vertexList[0].x
@@ -187,7 +192,7 @@ class dcelVis(Tk):
                 yield self.explain_vertex(e)
 
     def explain_hedge(self, e):
-        print e
+        printMessage("Hedge: %s, Origin: %s" % (e, e.origin))
         self.draw.deleteItems(self.highlight_cache)
 
         i1 = self.draw_dcel_face(e.incidentFace, fill='#ffc0bf', outline='')
@@ -200,7 +205,7 @@ class dcelVis(Tk):
         self.highlight_cache = [i1,i2,i3,i4,i5,i6]
 
     def explain_vertex(self, v):
-        print v
+        printMessage("Vertex: %s" % v)
         self.draw.deleteItems(self.highlight_cache)
 
         i1 = self.draw_dcel_vertex(v, size=7, fill='red', outline='')
@@ -209,7 +214,7 @@ class dcelVis(Tk):
         self.highlight_cache = [i1,i2]
 
     def explain_face(self, f):
-        print f
+        printMessage("Face: %s" % f)
         self.draw.deleteItems(self.highlight_cache)
 
         i1 = self.draw_dcel_face(f, fill='#ffc0bf', outline='')
@@ -253,7 +258,6 @@ class dcelVis(Tk):
 
     def draw_dcel_face(self, f, **options):
         if f == self.D.infiniteFace:
-            print 'Im not drawing infiniteFace'
             return
 
         if options == {}:
@@ -270,6 +274,5 @@ class dcelVis(Tk):
         print self.canvas.find_closest(x, y)
 
     def exit(self, event):
-        print "bye bye."
         self.quit()
         self.destroy()
